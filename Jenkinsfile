@@ -2,18 +2,32 @@ pipeline {
     agent any
 
     stages {
+        stage('Set Up Virtual Environment') {
+            steps {
+                echo 'Setting up virtual environment...'
+                // Create a virtual environment
+                sh 'python3 -m venv venv'
+                // Activate the virtual environment
+                sh '. venv/bin/activate'
+            }
+        }
+
         stage('Build') {
             steps {
                 echo 'Installing dependencies...'
-                sh 'pip install -r requirements.txt'
+                // Install dependencies in the virtual environment
+                sh '. venv/bin/activate && pip install -r requirements.txt'
             }
         }
+
         stage('Test') {
             steps {
                 echo 'Running tests...'
-                sh 'python -m unittest discover -s .'
+                // Run tests inside the virtual environment
+                sh '. venv/bin/activate && python -m unittest discover -s .'
             }
         }
+
         stage('Deploy') {
             steps {
                 echo 'Deploying application...'
